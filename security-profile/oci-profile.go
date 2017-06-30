@@ -120,6 +120,16 @@ func (p *OciProfile) AllowSyscallsWithArgs(syscallsWithArgsToAllow map[string][]
 	}
 }
 
+/* Allow a list of syscalls without specific arguments */
+func (p *OciProfile) AllowSyscalls(syscallsToAllow ...string) {
+	syscallsWithNoArgsToAllow := make(map[string][]specs.LinuxSeccompArg)
+	for _, syscallsToAllow := range syscallsToAllow {
+		syscallsWithNoArgsToAllow[syscallsToAllow] = []specs.LinuxSeccompArg{}
+	}
+
+	p.AllowSyscallsWithArgs(syscallsWithNoArgsToAllow)
+}
+
 /* Add seccomp rules to block syscalls with the given arguments and remove them from allowed/debug rules if present */
 func (p *OciProfile) BlockSyscallsWithArgs(syscallsWithArgsToBlock map[string][]specs.LinuxSeccompArg) {
 	defaultActError := (p.Oci.Linux.Seccomp.DefaultAction == specs.ActErrno)
