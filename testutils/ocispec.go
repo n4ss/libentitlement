@@ -304,3 +304,27 @@ func NamespacesDeactivated(nsList []specs.LinuxNamespace, namespaces []specs.Lin
 
 	return true
 }
+
+// PathListMatchRefMount checks that the path list holds exactly the mount destinations of the provided mount list
+func PathListMatchRefMount(mountPathList []string, refMounts []specs.Mount) bool {
+	if len(mountPathList) != len(refMounts) {
+		return false
+	}
+
+	for _, mountPath := range mountPathList {
+		found := false
+
+		for _, mount := range refMounts {
+			if mount.Destination == mountPath {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			return false
+		}
+	}
+
+	return true
+}
