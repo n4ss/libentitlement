@@ -152,6 +152,33 @@ func SeccompSyscallsBlocked(seccompProfile specs.LinuxSeccomp, syscallNames []ty
 	return true
 }
 
+// SeccompSyscallWithArgsAllowed checks that the provided syscall and args are whitelisted by the seccomp profile
+func SeccompSyscallWithArgsAllowed(seccompProfile specs.LinuxSeccomp, syscallName types.Syscall, syscallArgs []specs.LinuxSeccompArg) bool {
+	return !SeccompSyscallWithArgsBlocked(seccompProfile, syscallName, syscallArgs)
+}
+
+// SeccompSyscallsWithArgsAllowed checks that the provided list of syscalls and args are whitelisted by the seccomp profile
+func SeccompSyscallsWithArgsAllowed(seccompProfile specs.LinuxSeccomp, syscallsWithArgs map[types.Syscall][]specs.LinuxSeccompArg) bool {
+	for syscallName, syscallArgs := range syscallsWithArgs {
+		if !SeccompSyscallWithArgsAllowed(seccompProfile, syscallName, syscallArgs) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// SeccompSyscallsAllowed checks that the provided syscalls are whitelisted by the seccomp profile
+func SeccompSyscallsAllowed(seccompProfile specs.LinuxSeccomp, syscallNames []types.Syscall) bool {
+	for _, syscallName := range syscallNames {
+		if !SeccompSyscallWithArgsAllowed(seccompProfile, syscallName, []specs.LinuxSeccompArg{}) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // CapBlocked checks that the provided capability is not allowed
 func CapBlocked(linuxCaps specs.LinuxCapabilities, capability types.Capability) bool {
 	return !(capListContains(linuxCaps.Bounding, capability) || capListContains(linuxCaps.Permitted, capability) ||
