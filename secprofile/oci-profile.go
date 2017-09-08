@@ -8,6 +8,21 @@ import (
 	"reflect"
 )
 
+type APIID string
+
+type APISubsetId string
+
+type APIAccess string
+
+const (
+	Access APIAccess = "access"
+	Deny APIAccess = "deny"
+)
+
+type APIAccessConfig struct {
+	APIRights map[APIID]map[APISubsetId]APIAcces
+}
+
 // OCIProfileType is an identifier for an OCI profile
 var OCIProfileType = ProfileType("oci-profile")
 
@@ -19,12 +34,17 @@ var OCIProfileType = ProfileType("oci-profile")
 type OCIProfile struct {
 	OCI           *specs.Spec
 	AppArmorSetup *apparmor.ProfileData
+	APIAccess	*APIAccessConfig
 }
 
 // NewOCIProfile instantiates an OCIProfile object with an OCI specification structure
 func NewOCIProfile(ociSpec *specs.Spec, apparmorProfileName string) *OCIProfile {
 	if apparmorProfileName == "" || apparmorProfileName == "unconfined" {
-		return &OCIProfile{OCI: ociSpec, AppArmorSetup: nil}
+		return &OCIProfile{
+							OCI: ociSpec,
+							AppArmorSetup: nil,
+							APIAccess: &APIAccessConfig{make(map[APIID]map[APISubsetId]APIAcces)}
+							}
 	}
 
 	return &OCIProfile{OCI: ociSpec, AppArmorSetup: apparmor.NewEmptyProfileData(apparmorProfileName)}
