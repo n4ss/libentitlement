@@ -20,7 +20,7 @@ const (
 )
 
 type APIAccessConfig struct {
-	APIRights map[APIID]map[APISubsetId]APIAcces
+	APIRights map[APIID]map[APISubsetId]APIAccess
 }
 
 // OCIProfileType is an identifier for an OCI profile
@@ -43,7 +43,7 @@ func NewOCIProfile(ociSpec *specs.Spec, apparmorProfileName string) *OCIProfile 
 		return &OCIProfile{
 							OCI: ociSpec,
 							AppArmorSetup: nil,
-							APIAccess: &APIAccessConfig{make(map[APIID]map[APISubsetId]APIAcces)}
+							APIAccess: &APIAccessConfig{make(map[APIID]map[APISubsetId]APIAccess)},
 							}
 	}
 
